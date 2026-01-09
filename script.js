@@ -186,7 +186,6 @@ btnRemover.addEventListener("click", () => {
 
 /* ================= MOSTRAR RESULTADO ================= */
 function mostrarResultado(data) {
-    // data.objetos = [{ categoria, confianca, bbox: [x, y, w, h] }]
     objetosList.innerHTML = "";
 
     const ctx = canvas.getContext("2d");
@@ -194,25 +193,52 @@ function mostrarResultado(data) {
     canvas.height = preview.height;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    if (!data.objetos || data.objetos.length === 0) {
+        status.textContent = "Nenhum objeto detectado.";
+        return;
+    }
+
+    // 🔥 objeto principal = maior confiança
+    const principal = data.objetos.reduce((a, b) =>
+        b.confianca > a.confianca ? b : a
+    );
+
+    // ===== BARRA DE CONFIANÇA =====
+    const categoriaSpan = document.getElementById("categoria");
+    const barraConfianca = document.getElementById("barraConfianca");
+
+    categoriaSpan.textContent = principal.categoria;
+
+    barraConfianca.style.width = principal.confianca + "%";
+    barraConfianca.textContent = principal.confianca + "%";
+    barraConfianca.style.background =
+        principal.confianca > 85 ? "#4caf50" : "#ff9800";
+
+    // ===== LISTA + CANVAS =====
     data.objetos.forEach(obj => {
-        // Lista de objetos
         const p = document.createElement("p");
         p.textContent = `${obj.categoria} - ${obj.confianca}%`;
         objetosList.appendChild(p);
 
-        // Bounding box no canvas
         const [x, y, w, h] = obj.bbox;
+
         ctx.strokeStyle = "#e53935";
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, w, h);
 
         ctx.fillStyle = "#e53935";
         ctx.font = "16px Arial";
-        ctx.fillText(obj.categoria, x + 4, y + 16);
+        ctx.fillText(
+            `${obj.categoria} ${obj.confianca}%`,
+            x + 4,
+            y > 20 ? y - 5 : y + 15
+        );
     });
 
     resultadoDiv.style.display = "block";
+    feedbackSection.style.display = "block";
 }
+
 
 /* ================= ENVIAR PARA API ================= */
 btnEnviar.addEventListener("click", async () => {
@@ -272,3 +298,4 @@ btnEnviarFeedback.addEventListener("click", () => {
     feedbackEnviado = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
