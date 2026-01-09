@@ -42,21 +42,9 @@ import { enviarNumero } from "./api.js";
 
 console.log("Script carregado");
 
-async function teste() {
-    try {
-        const resposta = await enviarNumero(4);
-        console.log("%cTeste 1 - Número 4", "color: blue; font-weight: bold;", resposta);
-    } catch (e) {
-        console.error("%cErro no teste 1:", "color: red; font-weight: bold;", e);
-    }
-}
-
-teste(); // chama a primeira vez
-
-// Segunda chamada direta
 enviarNumero(10)
-    .then(res => console.log("%cTeste 2 - Número 10", "color: green; font-weight: bold;", res))
-    .catch(err => console.error("%cErro no teste 2:", "color: red; font-weight: bold;", err));
+    .then(console.log)
+    .catch(console.error);
 
 
 /* ================= FUNÇÕES ================= */
@@ -284,4 +272,5 @@ btnEnviarFeedback.addEventListener("click", () => {
     feedbackEnviado = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
 
