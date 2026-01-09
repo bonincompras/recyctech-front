@@ -42,21 +42,20 @@ import { enviarNumero } from "./api.js";
 
 console.log("Script carregado");
 
-enviarNumero(10)
-    .then(console.log)
-    .catch(console.error);
+async function testarNumeros() {
+    const numeros = [10, 11, 15, 20];
 
-enviarNumero(11)
-    .then(console.log)
-    .catch(console.error);
+    for (const numero of numeros) {
+        try {
+            const resultado = await enviarNumero(numero);
+            console.log(resultado);
+        } catch (erro) {
+            console.error(erro);
+        }
+    }
+}
 
-enviarNumero(15)
-    .then(console.log)
-    .catch(console.error);
-
-enviarNumero(20)
-    .then(console.log)
-    .catch(console.error);
+testarNumeros();;
 
 /* ================= FUNÇÕES ================= */
 function validarImagem(arquivo) {
@@ -283,6 +282,7 @@ btnEnviarFeedback.addEventListener("click", () => {
     feedbackEnviado = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
 
 
 
