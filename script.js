@@ -20,9 +20,9 @@ const loader = document.getElementById("loader");
 const resultadoDiv = document.getElementById("resultado");
 const objetosList = document.getElementById("objetos-list");
 
-/* === ELEMENTOS DE RESULTADO PRINCIPAL === */
-let categoriaSpan;
-let barraConfianca;
+/* === RESULTADO PRINCIPAL (JÁ EXISTE NO HTML) === */
+const categoriaSpan = document.getElementById("categoria");
+const barraConfianca = document.getElementById("barraConfianca");
 
 /* === FEEDBACK === */
 const feedbackSection = document.getElementById("feedbackSection");
@@ -40,9 +40,10 @@ let feedbackEnviado = false;
 
 /* ================= INICIAL ================= */
 infoArquivo.style.display = "none";
+resultadoDiv.style.display = "none";
+feedbackSection.style.display = "none";
 btnEnviar.disabled = true;
 btnRemover.disabled = true;
-feedbackSection.style.display = "none";
 
 /* ================= FUNÇÕES ================= */
 function validarImagem(arquivo) {
@@ -85,6 +86,10 @@ function limparImagem() {
     feedbackSection.style.display = "none";
     objetosList.innerHTML = "";
 
+    categoriaSpan.textContent = "";
+    barraConfianca.style.width = "0%";
+    barraConfianca.textContent = "";
+
     status.textContent = "";
 
     btnEnviar.disabled = true;
@@ -111,13 +116,16 @@ inputImagem.addEventListener("change", () => {
 
 /* ================= DRAG & DROP ================= */
 dropArea.addEventListener("click", () => inputImagem.click());
+
 dropArea.addEventListener("dragover", e => {
     e.preventDefault();
     dropArea.classList.add("dragover");
 });
+
 dropArea.addEventListener("dragleave", () => {
     dropArea.classList.remove("dragover");
 });
+
 dropArea.addEventListener("drop", e => {
     e.preventDefault();
     dropArea.classList.remove("dragover");
@@ -131,27 +139,7 @@ dropArea.addEventListener("drop", e => {
 /* ================= REMOVER ================= */
 btnRemover.addEventListener("click", limparImagem);
 
-
-
 /* ================= RESULTADO ================= */
-function criarResumoPrincipal() {
-    const resumo = document.createElement("div");
-    resumo.innerHTML = `
-        <p><strong>Categoria principal:</strong>
-            <span id="categoria" class="categoria-destacada"></span>
-        </p>
-        <p><strong>Confiança:</strong></p>
-        <div class="barra-confianca">
-            <div id="barraConfianca"></div>
-        </div>
-    `;
-    resultadoDiv.prepend(resumo);
-
-    categoriaSpan = document.getElementById("categoria");
-    barraConfianca = document.getElementById("barraConfianca");
-}
-
-
 function mostrarResultado(data) {
     if (!data.objetos || data.objetos.length === 0) {
         status.textContent = "Nenhum objeto detectado.";
@@ -163,28 +151,7 @@ function mostrarResultado(data) {
         b.confianca > a.confianca ? b : a
     );
 
-    // Cria o resumo apenas uma vez
-    let resumo = document.getElementById("resumo-principal");
-    if (!resumo) {
-        resumo = document.createElement("div");
-        resumo.id = "resumo-principal";
-        resumo.innerHTML = `
-            <p><strong>Categoria principal:</strong>
-                <span id="categoria" class="categoria-destacada"></span>
-            </p>
-
-            <p><strong>Confiança:</strong></p>
-            <div class="barra-confianca">
-                <div id="barraConfianca"></div>
-            </div>
-        `;
-        resultadoDiv.innerHTML = "";
-        resultadoDiv.appendChild(resumo);
-    }
-
-    const categoriaSpan = document.getElementById("categoria");
-    const barraConfianca = document.getElementById("barraConfianca");
-
+    /* ===== TEXTO ===== */
     categoriaSpan.textContent = principal.categoria;
 
     barraConfianca.style.width = principal.confianca + "%";
@@ -192,13 +159,14 @@ function mostrarResultado(data) {
     barraConfianca.style.background =
         principal.confianca >= 85 ? "#4caf50" : "#ff9800";
 
-    // ===== CANVAS =====
+    /* ===== CANVAS ===== */
     const ctx = canvas.getContext("2d");
     canvas.width = preview.clientWidth;
     canvas.height = preview.clientHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const [x, y, w, h] = principal.bbox;
+
     ctx.strokeStyle = "#e53935";
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, w, h);
@@ -264,4 +232,3 @@ btnEnviarFeedback.addEventListener("click", () => {
     categoriaCorreta.disabled = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
-
