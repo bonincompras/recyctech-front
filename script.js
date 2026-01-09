@@ -2,20 +2,24 @@
 const inputImagem = document.getElementById("inputImagem");
 const dropArea = document.getElementById("dropArea");
 const preview = document.getElementById("preview");
+const canvas = document.getElementById("canvas");
 const nomeArquivo = document.getElementById("nomeArquivo");
 const tamanhoArquivo = document.getElementById("tamanhoArquivo");
 const infoArquivo = document.getElementById("infoArquivo");
+
 const btnRemover = document.getElementById("btnRemover");
 const btnEnviar = document.getElementById("btnEnviar");
 const status = document.getElementById("status");
+
 const resultadoDiv = document.getElementById("resultado");
-const categoriaSpan = document.getElementById("categoria");
-const barraConfianca = document.getElementById("barraConfianca");
+const objetosList = document.getElementById("objetos-list");
+
 const feedbackSection = document.getElementById("feedbackSection");
 const feedbackRadios = document.querySelectorAll("input[name='feedback']");
 const correcaoDiv = document.getElementById("correcao");
 const categoriaCorreta = document.getElementById("categoriaCorreta");
 const btnEnviarFeedback = document.getElementById("btnEnviarFeedback");
+
 const loader = document.getElementById("loader");
 
 /* ================= ESTADO ================= */
@@ -64,19 +68,16 @@ function limparImagem() {
 
     preview.style.display = "none";
     preview.src = "";
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
     nomeArquivo.textContent = "---";
     tamanhoArquivo.textContent = "---";
     infoArquivo.style.display = "none";
 
     resultadoDiv.style.display = "none";
+    objetosList.innerHTML = "";
     feedbackSection.style.display = "none";
     correcaoDiv.style.display = "none";
-
-    categoriaSpan.textContent = "";
-    categoriaSpan.className = "categoria-destacada";
-    barraConfianca.style.width = "0";
-    barraConfianca.textContent = "";
 
     status.textContent = "";
 
@@ -94,16 +95,8 @@ function limparImagem() {
 
     analiseRealizada = false;
     feedbackEnviado = false;
-
-    // limpar canvas se existir
-    const canvas = document.getElementById("canvas");
-    if (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
 }
 
-/* ================= MODAL CONFIRMAÇÃO ================= */
 function mostrarConfirmacao(onConfirmar) {
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
@@ -161,16 +154,13 @@ inputImagem.addEventListener("change", () => {
 
 /* ================= DRAG & DROP ================= */
 dropArea.addEventListener("click", () => inputImagem.click());
-
 dropArea.addEventListener("dragover", e => {
     e.preventDefault();
     dropArea.classList.add("dragover");
 });
-
 dropArea.addEventListener("dragleave", () => {
     dropArea.classList.remove("dragover");
 });
-
 dropArea.addEventListener("drop", e => {
     e.preventDefault();
     dropArea.classList.remove("dragover");
@@ -187,76 +177,62 @@ btnRemover.addEventListener("click", () => {
         limparImagem();
         return;
     }
-
     if (analiseRealizada && !feedbackEnviado) {
         mostrarConfirmacao(limparImagem);
         return;
     }
-
     limparImagem();
 });
 
-/* ================= ENVIAR IMAGEM PARA API ================= */
+/* ================= MOSTRAR RESULTADO ================= */
+function mostrarResultado(data) {
+    // data.objetos = [{ categoria, confianca, bbox: [x, y, w, h] }]
+    objetosList.innerHTML = "";
+
+    const ctx = canvas.getContext("2d");
+    canvas.width = preview.width;
+    canvas.height = preview.height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    data.objetos.forEach(obj => {
+        // Lista de objetos
+        const p = document.createElement("p");
+        p.textContent = `${obj.categoria} - ${obj.confianca}%`;
+        objetosList.appendChild(p);
+
+        // Bounding box no canvas
+        const [x, y, w, h] = obj.bbox;
+        ctx.strokeStyle = "#e53935";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, h);
+
+        ctx.fillStyle = "#e53935";
+        ctx.font = "16px Arial";
+        ctx.fillText(obj.categoria, x + 4, y + 16);
+    });
+
+    resultadoDiv.style.display = "block";
+}
+
+/* ================= ENVIAR PARA API ================= */
 btnEnviar.addEventListener("click", async () => {
     if (!arquivoAtual) return;
 
     loader.style.display = "flex";
     btnEnviar.disabled = true;
     btnRemover.disabled = true;
-    status.textContent = "Analisando imagem...";
 
     try {
         const data = await enviarImagemAPI(arquivoAtual);
-
-        // data.objetos = [{ categoria, confianca, bbox: [x_min, y_min, x_max, y_max] }]
-        // data.largura_imagem, data.altura_imagem
-
-        // desenhar no canvas
-        let canvas = document.getElementById("canvas");
-        if (!canvas) {
-            canvas = document.createElement("canvas");
-            canvas.id = "canvas";
-            preview.parentNode.insertBefore(canvas, preview.nextSibling);
-            canvas.style.position = "absolute";
-            canvas.style.left = preview.offsetLeft + "px";
-            canvas.style.top = preview.offsetTop + "px";
-        }
-        canvas.width = preview.width;
-        canvas.height = preview.height;
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // desenhar cada objeto detectado
-        data.objetos.forEach(obj => {
-            const scaleX = canvas.width / data.largura_imagem;
-            const scaleY = canvas.height / data.altura_imagem;
-            const [x_min, y_min, x_max, y_max] = obj.bbox;
-
-            ctx.strokeStyle = "#e53935";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x_min * scaleX, y_min * scaleY, (x_max - x_min) * scaleX, (y_max - y_min) * scaleY);
-
-            ctx.fillStyle = "#e53935";
-            ctx.font = "16px Arial";
-            ctx.fillText(`${obj.categoria} (${obj.confianca}%)`, x_min * scaleX, Math.max(y_min * scaleY - 5, 10));
-        });
-
-        // mostrar resultados gerais
         resultadoAtual = data;
-        categoriaSpan.textContent = data.objetos.map(o => o.categoria).join(", ");
-        barraConfianca.style.width = Math.max(...data.objetos.map(o => o.confianca)) + "%";
-        barraConfianca.textContent = Math.max(...data.objetos.map(o => o.confianca)) + "%";
-        barraConfianca.style.background = "#4caf50";
+        mostrarResultado(data);
 
-        resultadoDiv.style.display = "block";
-        feedbackSection.style.display = "block";
         analiseRealizada = true;
         feedbackEnviado = false;
         status.textContent = "Análise concluída.";
-
-    } catch (err) {
-        console.error(err);
-        status.textContent = "Erro ao analisar imagem.";
+    } catch (erro) {
+        console.error(erro);
+        status.textContent = "Erro na análise.";
     } finally {
         loader.style.display = "none";
         btnEnviar.disabled = false;
@@ -287,6 +263,7 @@ categoriaCorreta.addEventListener("change", () => {
     btnEnviarFeedback.disabled = categoriaCorreta.value === "";
 });
 
+/* ================= ENVIAR FEEDBACK ================= */
 btnEnviarFeedback.addEventListener("click", () => {
     btnEnviarFeedback.disabled = true;
     feedbackRadios.forEach(r => r.disabled = true);
