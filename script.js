@@ -46,6 +46,17 @@ enviarNumero(10)
     .then(console.log)
     .catch(console.error);
 
+enviarNumero(11)
+    .then(console.log)
+    .catch(console.error);
+
+enviarNumero(15)
+    .then(console.log)
+    .catch(console.error);
+
+enviarNumero(20)
+    .then(console.log)
+    .catch(console.error);
 
 /* ================= FUNÇÕES ================= */
 function validarImagem(arquivo) {
@@ -272,5 +283,6 @@ btnEnviarFeedback.addEventListener("click", () => {
     feedbackEnviado = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
 
 
