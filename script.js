@@ -131,6 +131,8 @@ dropArea.addEventListener("drop", e => {
 /* ================= REMOVER ================= */
 btnRemover.addEventListener("click", limparImagem);
 
+
+
 /* ================= RESULTADO ================= */
 function criarResumoPrincipal() {
     const resumo = document.createElement("div");
@@ -149,18 +151,8 @@ function criarResumoPrincipal() {
     barraConfianca = document.getElementById("barraConfianca");
 }
 
+
 function mostrarResultado(data) {
-    objetosList.innerHTML = "";
-
-    if (!categoriaSpan || !barraConfianca) {
-        criarResumoPrincipal();
-    }
-
-    const ctx = canvas.getContext("2d");
-    canvas.width = preview.clientWidth;
-    canvas.height = preview.clientHeight;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     if (!data.objetos || data.objetos.length === 0) {
         status.textContent = "Nenhum objeto detectado.";
         return;
@@ -171,31 +163,53 @@ function mostrarResultado(data) {
         b.confianca > a.confianca ? b : a
     );
 
+    // Cria o resumo apenas uma vez
+    let resumo = document.getElementById("resumo-principal");
+    if (!resumo) {
+        resumo = document.createElement("div");
+        resumo.id = "resumo-principal";
+        resumo.innerHTML = `
+            <p><strong>Categoria principal:</strong>
+                <span id="categoria" class="categoria-destacada"></span>
+            </p>
+
+            <p><strong>Confiança:</strong></p>
+            <div class="barra-confianca">
+                <div id="barraConfianca"></div>
+            </div>
+        `;
+        resultadoDiv.innerHTML = "";
+        resultadoDiv.appendChild(resumo);
+    }
+
+    const categoriaSpan = document.getElementById("categoria");
+    const barraConfianca = document.getElementById("barraConfianca");
+
     categoriaSpan.textContent = principal.categoria;
+
     barraConfianca.style.width = principal.confianca + "%";
     barraConfianca.textContent = principal.confianca + "%";
     barraConfianca.style.background =
         principal.confianca >= 85 ? "#4caf50" : "#ff9800";
 
-    data.objetos.forEach(obj => {
-        const p = document.createElement("p");
-        p.textContent = `${obj.categoria} — ${obj.confianca}%`;
-        objetosList.appendChild(p);
+    // ===== CANVAS =====
+    const ctx = canvas.getContext("2d");
+    canvas.width = preview.clientWidth;
+    canvas.height = preview.clientHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const [x, y, w, h] = obj.bbox;
+    const [x, y, w, h] = principal.bbox;
+    ctx.strokeStyle = "#e53935";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
 
-        ctx.strokeStyle = "#e53935";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, w, h);
-
-        ctx.fillStyle = "#e53935";
-        ctx.font = "14px Arial";
-        ctx.fillText(
-            `${obj.categoria} ${obj.confianca}%`,
-            x + 4,
-            y > 15 ? y - 5 : y + 15
-        );
-    });
+    ctx.fillStyle = "#e53935";
+    ctx.font = "14px Arial";
+    ctx.fillText(
+        `${principal.categoria} ${principal.confianca}%`,
+        x + 4,
+        y > 15 ? y - 5 : y + 15
+    );
 
     resultadoDiv.style.display = "block";
     feedbackSection.style.display = "block";
@@ -250,3 +264,4 @@ btnEnviarFeedback.addEventListener("click", () => {
     categoriaCorreta.disabled = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
