@@ -1,12 +1,15 @@
 const API_BASE_URL = "https://recyctech-back.onrender.com";
 
-export async function enviarNumero(numero) {
-    const response = await fetch(`${API_BASE_URL}/calcular`, {
+export async function enviarImagemAPI(arquivo) {
+    const formData = new FormData();
+    formData.append("file", arquivo);
+
+    const response = await fetch(`${API_BASE_URL}/analisar`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ numero })
+        body: formData
     });
 
-    if (!response.ok) throw new Error("Erro ao comunicar com o backend");
+    if (!response.ok) throw new Error("Erro na API");
+
     return await response.json();
 }
