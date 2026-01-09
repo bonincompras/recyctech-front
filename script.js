@@ -45,15 +45,18 @@ console.log("Script carregado");
 async function teste() {
     try {
         const resposta = await enviarNumero(4);
-        console.log("Resposta:", resposta);
+        console.log("%cTeste 1 - Número 4", "color: blue; font-weight: bold;", resposta);
     } catch (e) {
-        console.error("Erro:", e);
+        console.error("%cErro no teste 1:", "color: red; font-weight: bold;", e);
     }
 }
 
-teste();
+teste(); // chama a primeira vez
 
-
+// Segunda chamada direta
+enviarNumero(10)
+    .then(res => console.log("%cTeste 2 - Número 10", "color: green; font-weight: bold;", res))
+    .catch(err => console.error("%cErro no teste 2:", "color: red; font-weight: bold;", err));
 
 
 /* ================= FUNÇÕES ================= */
@@ -281,3 +284,4 @@ btnEnviarFeedback.addEventListener("click", () => {
     feedbackEnviado = true;
     status.textContent = "Obrigado pelo feedback! 🙌";
 });
+
