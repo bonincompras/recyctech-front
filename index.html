@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <title>EcoVision • Classificação de Lixo</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo básico para canvas sobre imagem */
+        #preview-container {
+            position: relative;
+            display: inline-block;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+        .dragover {
+            border: 2px dashed #4caf50;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,13 +38,11 @@
     </nav>
 </header>
 
-
-
 <main>
     <div class="card">
         <h1>Análise de Imagem</h1>
-        <p class="subtitulo">Envie uma imagem para identificar se é lixo ou não</p>
-        <!-- LOADING -->
+        <p class="subtitulo">Envie uma imagem para identificar objetos e classificar</p>
+
         <div id="loader" class="loader" style="display:none;">
             <div class="spinner"></div>
             <p>Analisando imagem...</p>
@@ -39,23 +53,20 @@
             <input type="file" id="inputImagem" accept="image/png, image/jpeg">
         </div>
 
-        <div class="info" id="infoArquivo">
+        <div id="infoArquivo" class="info">
             <p><strong>Arquivo:</strong> <span id="nomeArquivo">---</span></p>
             <p><strong>Tamanho:</strong> <span id="tamanhoArquivo">---</span></p>
         </div>
 
-        <div id="resultado" class="resultado" style="display:none;">
-            <h3>Resultado da Análise</h3>
-            <p><strong>Categoria:</strong> 
-                <span id="categoria" class="categoria-destacada"></span>
-            </p>
-            <p><strong>Confiança:</strong></p>
-            <div class="barra-confianca">
-                <div id="barraConfianca"></div>
-            </div>
+        <div id="preview-container">
+            <img id="preview" alt="Prévia da imagem">
+            <canvas id="canvas"></canvas>
         </div>
 
-        <img id="preview" alt="Prévia da imagem">
+        <div id="resultado" class="resultado" style="display:none;">
+            <h3>Resultado da Análise</h3>
+            <div id="objetos-list"></div>
+        </div>
 
         <div id="feedbackSection" style="display:none;">
             <h4>Esse resultado está correto?</h4>
@@ -78,22 +89,20 @@
 
             <button id="btnEnviarFeedback" class="primario" disabled>Enviar feedback</button>
         </div>
+
         <p id="status"></p>
 
         <div class="botoes">
             <button id="btnEnviar" class="primario">Enviar para análise</button>
             <button id="btnRemover" class="secundario">Remover imagem</button>
         </div>
-
     </div>
 </main>
 
 <footer>
     <p>© 2026 EcoVision • Projeto experimental de IA ambiental</p>
 </footer>
-<script type="module" src="script.js"></script>
 
+<script type="module" src="script.js"></script>
 </body>
 </html>
-
-
