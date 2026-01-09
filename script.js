@@ -99,10 +99,56 @@ function limparImagem() {
     feedbackRadios.forEach(r => {
         r.checked = false;
         r.disabled = false;
+        r.parentElement.classList.remove("checked"); // remove visual
     });
 
     categoriaCorreta.value = "";
     categoriaCorreta.disabled = false;
+}
+
+/* ================= MODAL CONFIRMAÇÃO ================= */
+function mostrarConfirmacao(onConfirmar) {
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(0,0,0,0.5)";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = 1000;
+
+    const modal = document.createElement("div");
+    modal.style.background = "#fff";
+    modal.style.padding = "25px";
+    modal.style.borderRadius = "12px";
+    modal.style.maxWidth = "400px";
+    modal.style.textAlign = "center";
+    modal.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)";
+    modal.innerHTML = `
+        <h3>Remover imagem?</h3>
+        <p style="margin:15px 0;">
+            A imagem já foi analisada e o feedback ainda não foi enviado.<br>
+            Se remover agora, o resultado será perdido.
+        </p>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button id="cancelar" style="flex:1; padding:10px;">Cancelar</button>
+            <button id="confirmar" style="flex:1; padding:10px; background:#e53935; color:#fff; border:none;">Remover</button>
+        </div>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    modal.querySelector("#cancelar").onclick = () => {
+        document.body.removeChild(overlay);
+    };
+
+    modal.querySelector("#confirmar").onclick = () => {
+        document.body.removeChild(overlay);
+        onConfirmar();
+    };
 }
 
 /* ================= INPUT ================= */
@@ -137,7 +183,13 @@ dropArea.addEventListener("drop", e => {
 });
 
 /* ================= REMOVER ================= */
-btnRemover.addEventListener("click", limparImagem);
+btnRemover.addEventListener("click", () => {
+    if (analiseRealizada && !feedbackEnviado) {
+        mostrarConfirmacao(limparImagem);
+    } else {
+        limparImagem();
+    }
+});
 
 /* ================= RESULTADO ================= */
 function mostrarResultado(data) {
@@ -146,12 +198,10 @@ function mostrarResultado(data) {
         return;
     }
 
-    // Objeto principal = maior confiança
     const principal = data.objetos.reduce((a, b) =>
         b.confianca > a.confianca ? b : a
     );
 
-    /* ===== TEXTO ===== */
     categoriaSpan.textContent = principal.categoria;
 
     barraConfianca.style.width = principal.confianca + "%";
@@ -159,7 +209,6 @@ function mostrarResultado(data) {
     barraConfianca.style.background =
         principal.confianca >= 85 ? "#4caf50" : "#ff9800";
 
-    /* ===== CANVAS ===== */
     const ctx = canvas.getContext("2d");
     canvas.width = preview.clientWidth;
     canvas.height = preview.clientHeight;
@@ -209,8 +258,12 @@ btnEnviar.addEventListener("click", async () => {
 });
 
 /* ================= FEEDBACK ================= */
+// Marca visual da opção selecionada
 feedbackRadios.forEach(radio => {
     radio.addEventListener("change", () => {
+        feedbackRadios.forEach(r => r.parentElement.classList.remove("checked"));
+        radio.parentElement.classList.add("checked");
+
         if (radio.value === "categoria_errada") {
             correcaoDiv.style.display = "block";
             btnEnviarFeedback.disabled = true;
