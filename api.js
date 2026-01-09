@@ -1,17 +1,26 @@
-const API_BASE_URL = "https://recyctech-back.onrender.com";
+import { enviarNumero } from './api.js';
 
-export async function enviarNumero(numero) {
-    const response = await fetch(`${API_BASE_URL}/calcular`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ numero })
-    });
+async function testarBackendVisual(numeroTeste = 10) {
+    console.log("%cIniciando teste com backend...", "color: blue; font-weight: bold;");
 
-    if (!response.ok) {
-        throw new Error("Erro ao comunicar com o backend");
+    try {
+        const resultado = await enviarNumero(numeroTeste);
+
+        console.log(
+            "%c✅ Comunicação OK!", 
+            "color: green; font-weight: bold; font-size: 14px;"
+        );
+        console.log("%cNúmero enviado:", "color: black; font-weight: bold;", numeroTeste);
+        console.log("%cResultado recebido:", "color: black; font-weight: bold;", resultado);
+
+    } catch (erro) {
+        console.error(
+            "%c❌ Erro na comunicação com o backend!", 
+            "color: red; font-weight: bold; font-size: 14px;", 
+            erro
+        );
     }
-
-    return await response.json();
 }
+
+// Chamando a função para testar
+testarBackendVisual(10);  // você pode trocar o número
