@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoVision • Classificação de Lixo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="logo.png" alt="Logo RecycTech">
+        <div class="logo-text">
+            <span class="nome">RecycTech</span>
+            <span class="slogan">A inteligência da reciclagem</span>
+        </div>
+    </div>
+    <nav>
+        <a href="#">Início</a>
+        <a href="#">Projeto</a>
+        <a href="#">Contato</a>
+    </nav>
+</header>
+
+
+
+<main>
+    <div class="card">
+        <h1>Análise de Imagem</h1>
+        <p class="subtitulo">Envie uma imagem para identificar se é lixo ou não</p>
+        <!-- LOADING -->
+        <div id="loader" class="loader" style="display:none;">
+            <div class="spinner"></div>
+            <p>Analisando imagem...</p>
+        </div>
+
+        <div id="dropArea" class="drop-area">
+            <p>Arraste a imagem aqui ou clique para selecionar</p>
+            <input type="file" id="inputImagem" accept="image/png, image/jpeg">
+        </div>
+
+        <div class="info" id="infoArquivo">
+            <p><strong>Arquivo:</strong> <span id="nomeArquivo">---</span></p>
+            <p><strong>Tamanho:</strong> <span id="tamanhoArquivo">---</span></p>
+        </div>
+
+        <div id="resultado" class="resultado" style="display:none;">
+            <h3>Resultado da Análise</h3>
+            <p><strong>Categoria:</strong> 
+                <span id="categoria" class="categoria-destacada"></span>
+            </p>
+            <p><strong>Confiança:</strong></p>
+            <div class="barra-confianca">
+                <div id="barraConfianca"></div>
+            </div>
+        </div>
+
+        <img id="preview" alt="Prévia da imagem">
+
+        <div id="feedbackSection" style="display:none;">
+            <h4>Esse resultado está correto?</h4>
+            <div class="feedback">
+                <label><input type="radio" name="feedback" value="correto">✔ Correto</label>
+                <label><input type="radio" name="feedback" value="nao_localizou">✖ Não localizou</label>
+                <label><input type="radio" name="feedback" value="categoria_errada">⚠ Categoria errada</label>
+            </div>
+
+            <div id="correcao" style="display:none;">
+                <p>Categoria correta:</p>
+                <select id="categoriaCorreta">
+                    <option value="">Selecione</option>
+                    <option>Plástico</option>
+                    <option>Papel</option>
+                    <option>Metal</option>
+                    <option>Vidro</option>
+                </select>
+            </div>
+
+            <button id="btnEnviarFeedback" class="primario" disabled>Enviar feedback</button>
+        </div>
+        <p id="status"></p>
+
+        <div class="botoes">
+            <button id="btnEnviar" class="primario">Enviar para análise</button>
+            <button id="btnRemover" class="secundario">Remover imagem</button>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <p>© 2026 EcoVision • Projeto experimental de IA ambiental</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
