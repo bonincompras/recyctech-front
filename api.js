@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://recyctech-back.onrender.com";
+const API_BASE_URL = "https://recyctech-back-1.onrender.com";
 
 export async function enviarImagemAPI(arquivo) {
     const formData = new FormData();
@@ -48,4 +48,5 @@ export async function enviarFeedbackAPI(categoria, feedbackSelecionado) {
 
     return await response.json();
 }
+
 
