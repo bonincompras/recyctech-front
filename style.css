@@ -160,12 +160,29 @@ h1 {
 }
 
 /* ===== IMAGEM ===== */
+#preview-container {
+    position: relative;  /* Necessário para que o canvas fique sobre a imagem */
+    display: inline-block;
+    max-width: 100%;  /* Garante que a imagem não ultrapasse o limite da área */
+    margin-top: 15px;
+}
+
 #preview {
     max-width: 100%;
-    margin-top: 15px;
-    display: none;
+    display: block;  /* A imagem deve ser um bloco para garantir que o canvas não a cubra completamente */
     border-radius: 10px;
     border: 1px solid #ccc;
+    z-index: 5;  /* Menor que o canvas */
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;  /* Coloca o canvas sobre a imagem */
+    pointer-events: none;  /* Permite interações com os elementos abaixo do canvas */
+    width: 100%;  /* Garante que o canvas tenha a largura da imagem */
+    height: 100%;  /* Garante que o canvas tenha a altura da imagem */
 }
 
 /* ===== BOTÕES ===== */
@@ -221,15 +238,18 @@ button {
 }
 
 /* ===== BARRA DE CONFIANÇA ===== */
+
 .barra-confianca {
-    width: 100%;
-    height: 30px;
-    background: #ddd;
+    height: 20px;
+    background-color: #ff9800;
+    margin-top: 5px;
     border-radius: 15px;
     margin-bottom: 10px;
     position: relative;
-    overflow: hidden;
+    text-align: center;
+    color: white;
 }
+
 
 .barra-confianca > div {
     height: 100%;
@@ -294,7 +314,7 @@ button {
     font-weight: bold;
     padding: 3px 10px;
     border-radius: 5px;
-    color: white;
+    color: rgb(3, 1, 124);
 }
 
 .categoria-Plástico { background: #4caf50; }
@@ -311,8 +331,11 @@ footer {
     text-align: center;
     padding: 15px;
     font-size: 13px;
+}
 
-
+.objeto-item {
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 /* ===== LOADER ===== */
@@ -352,10 +375,22 @@ footer {
     font-weight: bold;
 }
 
-
-
 /* ===== RESPONSIVO ===== */
 @media (max-width: 600px) {
     .feedback label { flex: 1 1 100%; }
     header { flex-direction: column; gap: 10px; }
+    .card {
+        padding: 20px;  /* Ajusta o padding para telas pequenas */
+    }
+
+    #preview-container {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+    }
+
+    #canvas {
+        width: 100%;
+        height: auto;
+    }
 }
