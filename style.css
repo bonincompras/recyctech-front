@@ -21,10 +21,16 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: var(--cinza);
     color: #333;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ================================
@@ -87,18 +93,22 @@ header nav a:hover {
    MAIN / CARD
 ================================ */
 main {
+    flex: 1;
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 40px 20px;
 }
 
 .card {
     background: white;
-    max-width: 500px;
+    max-width: 700px;
     width: 100%;
-    padding: 30px;
+    min-height: 600px;
+    padding: 40px;
     border-radius: 15px;
     box-shadow: 0 15px 35px rgba(0,0,0,.15);
+    position: relative;
 }
 
 /* ================================
@@ -270,4 +280,5 @@ footer {
         gap: 10px;
     }
 }
+
 
