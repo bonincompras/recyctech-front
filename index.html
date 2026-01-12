@@ -22,14 +22,13 @@
     </nav>
 </header>
 
-
-
 <main>
     <div class="card">
         <h1>Análise de Imagem</h1>
         <p class="subtitulo">Envie uma imagem para identificar se é lixo ou não</p>
+
         <!-- LOADING -->
-        <div id="loader" class="loader" style="display:none;">
+        <div id="loader" class="loader hidden">
             <div class="spinner"></div>
             <p>Analisando imagem...</p>
         </div>
@@ -44,9 +43,9 @@
             <p><strong>Tamanho:</strong> <span id="tamanhoArquivo">---</span></p>
         </div>
 
-        <div id="resultado" class="resultado" style="display:none;">
+        <div id="resultado" class="resultado hidden">
             <h3>Resultado da Análise</h3>
-            <p><strong>Categoria:</strong> 
+            <p><strong>Categoria:</strong>
                 <span id="categoria" class="categoria-destacada"></span>
             </p>
             <p><strong>Confiança:</strong></p>
@@ -57,15 +56,16 @@
 
         <img id="preview" alt="Prévia da imagem">
 
-        <div id="feedbackSection" style="display:none;">
+        <div id="feedbackSection" class="hidden">
             <h4>Esse resultado está correto?</h4>
+
             <div class="feedback">
                 <label><input type="radio" name="feedback" value="correto">✔ Correto</label>
                 <label><input type="radio" name="feedback" value="nao_localizou">✖ Não localizou</label>
                 <label><input type="radio" name="feedback" value="categoria_errada">⚠ Categoria errada</label>
             </div>
 
-            <div id="correcao" style="display:none;">
+            <div id="correcao" class="hidden">
                 <p>Categoria correta:</p>
                 <select id="categoriaCorreta">
                     <option value="">Selecione</option>
@@ -78,13 +78,13 @@
 
             <button id="btnEnviarFeedback" class="primario" disabled>Enviar feedback</button>
         </div>
+
         <p id="status"></p>
 
         <div class="botoes">
             <button id="btnEnviar" class="primario">Enviar para análise</button>
             <button id="btnRemover" class="secundario">Remover imagem</button>
         </div>
-
     </div>
 </main>
 
@@ -92,8 +92,6 @@
     <p>© 2026 RecycTech • Projeto experimental de Inteligência Artificial aplicada à reciclagem</p>
 </footer>
 
-
 <script type="module" src="script.js"></script>
-
 </body>
 </html>
