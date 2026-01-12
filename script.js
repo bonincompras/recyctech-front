@@ -1,5 +1,5 @@
 /* ================= IMPORT API ================= */
-import { enviarImagemAPI } from "./api.js";
+import { enviarImagemAPI, enviarFeedbackAPI } from "./api.js";
 
 /* ================= ELEMENTOS ================= */
 const inputImagem = document.getElementById("inputImagem");
@@ -85,10 +85,7 @@ function limparImagem() {
     resultadoDiv.style.display = "none";
     feedbackSection.style.display = "none";
     objetosList.innerHTML = "";
-
-    categoriaSpan.textContent = "";
-    barraConfianca.style.width = "0%";
-    barraConfianca.textContent = "";
+    canvas.style.display = "none";
 
     status.textContent = "";
 
@@ -192,47 +189,99 @@ btnRemover.addEventListener("click", () => {
 });
 
 /* ================= RESULTADO ================= */
+
 function mostrarResultado(data) {
-    if (!data.objetos || data.objetos.length === 0) {
+    console.log("Dados recebidos da API:", data);
+
+    // Verifique se "data.objetos" é um array e se não está vazio
+    if (!Array.isArray(data.objetos) || data.objetos.length === 0) {
         status.textContent = "Nenhum objeto detectado.";
+        resultadoDiv.style.display = "none";  // Esconde a seção de resultado
         return;
     }
 
-    const principal = data.objetos.reduce((a, b) =>
-        b.confianca > a.confianca ? b : a
-    );
+    // Limita o número de objetos para 5 (caso haja mais de 5)
+    const objetosLimitados = data.objetos.slice(0, 5);
 
-    categoriaSpan.textContent = principal.categoria;
+    // Atualiza a lista de objetos na interface
+    objetosList.innerHTML = "";
+    objetosLimitados.forEach((obj, index) => {
+        const listItem = document.createElement("div");
+        listItem.classList.add("objeto-item");
+        listItem.innerHTML = ` 
+            <strong>Objeto ${obj.objeto.replace('Obj', '')}</strong>: ${obj.categoria}
+            <div class="barra-confianca" id="barra-confianca-${index}"></div>
+        `;
+        objetosList.appendChild(listItem);
 
-    barraConfianca.style.width = principal.confianca + "%";
-    barraConfianca.textContent = principal.confianca + "%";
-    barraConfianca.style.background =
-        principal.confianca >= 85 ? "#4caf50" : "#ff9800";
+        // Atualiza a barra de confiança para cada objeto
+        const barraConfianca = document.getElementById(`barra-confianca-${index}`);
+        barraConfianca.style.width = obj.confianca + "%";
+        barraConfianca.textContent = Math.round(obj.confianca) + "%";
+        barraConfianca.style.background = obj.confianca >= 85 ? "#4caf50" : "#ff9800";
+    });
 
+    // Configura o canvas com a imagem e os objetos
     const ctx = canvas.getContext("2d");
-    canvas.width = preview.clientWidth;
+    canvas.width = preview.clientWidth; // Ajuste canvas para o tamanho da imagem
     canvas.height = preview.clientHeight;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const [x, y, w, h] = principal.bbox;
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpar canvas antes de desenhar
 
-    ctx.strokeStyle = "#e53935";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, w, h);
+    // Desenha a imagem de fundo no canvas (para garantir que esteja visível)
+    const img = new Image();
+    img.src = preview.src;
 
-    ctx.fillStyle = "#e53935";
-    ctx.font = "14px Arial";
-    ctx.fillText(
-        `${principal.categoria} ${principal.confianca}%`,
-        x + 4,
-        y > 15 ? y - 5 : y + 15
-    );
+    img.onload = () => {
+        const naturalWidth  = img.naturalWidth;
+        const naturalHeight = img.naturalHeight;
 
-    resultadoDiv.style.display = "block";
-    feedbackSection.style.display = "block";
+        canvas.width  = preview.clientWidth;
+        canvas.height = preview.clientHeight;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const scaleX = canvas.width  / naturalWidth;
+        const scaleY = canvas.height / naturalHeight;
+
+        objetosLimitados.forEach(obj => {
+            let [x1, y1, x2, y2] = obj.caixa || [0,0,0,0];
+
+            // Escala as coordenadas absolutas para o tamanho exibido
+            x1 *= scaleX;
+            y1 *= scaleY;
+            x2 *= scaleX;
+            y2 *= scaleY;
+
+            const w = x2 - x1;
+            const h = y2 - y1;
+
+            if (w > 10 && h > 10) {
+                ctx.strokeStyle = "#ff1744";
+                ctx.lineWidth = 2.5;
+                ctx.strokeRect(x1, y1, w, h);
+
+                const label = `${obj.objeto} ${obj.categoria} ${Math.round(obj.confianca)}%`;
+                ctx.font = "bold 14px Arial";
+                const textWidth = ctx.measureText(label).width + 10;
+
+                ctx.fillStyle = "rgba(255, 23, 68, 0.9)";
+                ctx.fillRect(x1 - 2, y1 - 20, textWidth, 24);
+
+                ctx.fillStyle = "white";
+                ctx.fillText(label, x1 + 3, y1 - 5);
+            }
+        });
+    };
+
+    resultadoDiv.style.display = "block";  // Torna visível a seção de resultado
+    feedbackSection.style.display = "block";  // Torna visível a seção de feedback
+    canvas.style.display = "block";
 }
 
-/* ================= ENVIAR PARA API ================= */
+
+/* ================= ENVIAR PARA API  ================= */
 btnEnviar.addEventListener("click", async () => {
     if (!arquivoAtual) return;
 
@@ -270,6 +319,7 @@ feedbackRadios.forEach(radio => {
         } else {
             correcaoDiv.style.display = "none";
             btnEnviarFeedback.disabled = false;
+            canvas.style.display = "none";
         }
     });
 });
@@ -278,10 +328,23 @@ categoriaCorreta.addEventListener("change", () => {
     btnEnviarFeedback.disabled = categoriaCorreta.value === "";
 });
 
-btnEnviarFeedback.addEventListener("click", () => {
+btnEnviarFeedback.addEventListener("click", async () => {
     feedbackEnviado = true;
     btnEnviarFeedback.disabled = true;
     feedbackRadios.forEach(r => (r.disabled = true));
     categoriaCorreta.disabled = true;
-    status.textContent = "Obrigado pelo feedback! 🙌";
+
+    const feedbackSelecionado = [...feedbackRadios].find(r => r.checked)?.value;
+
+    if (!feedbackSelecionado) {
+        status.textContent = "Por favor, selecione um feedback.";
+        return;
+    }
+
+    try {
+        status.innerHTML = `Resposta enviada: ${feedbackSelecionado}<br>Obrigado pelo feedback!`;
+    } catch (err) {
+        status.textContent = "Erro ao enviar feedback.";
+        console.error(err);
+    }
 });
