@@ -4,11 +4,18 @@ export async function enviarImagemAPI(arquivo) {
     const formData = new FormData();
     formData.append("file", arquivo);
 
+    // Cria um fetch com timeout de 10 segundos
+    const fetchPromise = fetch(`${API_BASE_URL}/analisar`, {
+        method: "POST",
+        body: formData
+    });
+
+    const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout: a API demorou mais de 10s")), 10000)
+    );
+
     try {
-        const response = await fetch(`${API_BASE_URL}/analisar`, {
-            method: "POST",
-            body: formData
-        });
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
 
         if (!response.ok) {
             throw new Error(`Erro ao analisar a imagem: ${response.statusText}`);
@@ -16,17 +23,17 @@ export async function enviarImagemAPI(arquivo) {
 
         const data = await response.json();
 
-        // Verifique se "data.objetos" existe e é um array
         if (!data.objetos || !Array.isArray(data.objetos)) {
             throw new Error("Resposta da API não contém um array de objetos");
         }
 
         return data;
     } catch (error) {
-        console.error("Erro ao enviar a imagem:", error);
-        throw new Error(`Erro ao analisar a imagem: ${error.message}`);
+        console.warn("Falha na API, fazendo fallback local:", error.message);
+        return analisarImagemLocal(arquivo); // <-- fallback local
     }
 }
+
 
 
 
@@ -48,5 +55,6 @@ export async function enviarFeedbackAPI(categoria, feedbackSelecionado) {
 
     return await response.json();
 }
+
 
 
