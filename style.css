@@ -1,3 +1,6 @@
+/* ================================
+   VARIÁVEIS
+================================ */
 :root {
     --verde: #2e7d32;
     --verde-claro: #4caf50;
@@ -5,10 +8,13 @@
     --amarelo: #fbc02d;
     --vermelho: #e53935;
     --cinza: #f4f4f4;
-    --cinza-escuro: #555;
     --cinza-claro: #e8e8e8;
+    --cinza-escuro: #555;
 }
 
+/* ================================
+   RESET
+================================ */
 * {
     margin: 0;
     padding: 0;
@@ -16,12 +22,21 @@
 }
 
 body {
-    background: var(--cinza);
     font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--cinza);
     color: #333;
 }
 
-/* ===== HEADER ===== */
+/* ================================
+   UTILITÁRIOS
+================================ */
+.hidden {
+    display: none !important;
+}
+
+/* ================================
+   HEADER
+================================ */
 header {
     background: var(--verde);
     color: white;
@@ -32,67 +47,45 @@ header {
     flex-wrap: wrap;
 }
 
-header .logo {
+.logo {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-header .logo img {
-    height: 50px; /* ajusta altura da logo */
-    width: auto; /* mantém proporção */
-    border-radius: 5px; /* opcional: cantos levemente arredondados */
+.logo img {
+    height: 50px;
+    border-radius: 5px;
 }
 
-header .logo-text {
+.logo-text {
     display: flex;
     flex-direction: column;
 }
 
-header .logo-text .nome {
+.logo-text .nome {
     font-size: 22px;
     font-weight: bold;
-    line-height: 1;
 }
 
-header .logo-text .slogan {
+.logo-text .slogan {
     font-size: 14px;
-    font-weight: normal;
-    line-height: 1;
     opacity: 0.9;
 }
 
-/* Navegação */
 header nav a {
     color: white;
     margin-left: 20px;
     text-decoration: none;
-    font-size: 14px;
 }
 
 header nav a:hover {
     text-decoration: underline;
 }
 
-/* Responsivo para mobile */
-@media (max-width: 600px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    header nav {
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        gap: 15px;
-    }
-    header nav a { margin-left: 0; }
-}
-
-
-
-/* ===== MAIN ===== */
+/* ================================
+   MAIN / CARD
+================================ */
 main {
     display: flex;
     justify-content: center;
@@ -101,19 +94,16 @@ main {
 
 .card {
     background: white;
-    width: 100%;
     max-width: 500px;
+    width: 100%;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    transition: transform 0.3s;
+    box-shadow: 0 15px 35px rgba(0,0,0,.15);
 }
 
-.card:hover {
-    transform: translateY(-5px);
-}
-
-/* ===== TEXTO ===== */
+/* ================================
+   TEXTO
+================================ */
 h1 {
     text-align: center;
     margin-bottom: 10px;
@@ -126,70 +116,43 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* ===== DROP AREA ===== */
+/* ================================
+   DROP AREA
+================================ */
 .drop-area {
     border: 2px dashed var(--verde);
     padding: 30px;
     text-align: center;
-    cursor: pointer;
     border-radius: 10px;
-    transition: 0.3s;
-    background: white;
+    cursor: pointer;
     margin-bottom: 15px;
 }
 
 .drop-area.dragover {
     background: #e8f5e9;
-    border-color: var(--verde-claro);
-    transform: scale(1.02);
-}
-
-.drop-area p {
-    font-size: 14px;
-    color: var(--cinza-escuro);
 }
 
 .drop-area input {
     display: none;
 }
 
-/* ===== INFO ===== */
-.info {
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-/* ===== IMAGEM ===== */
-#preview-container {
-    position: relative;  /* Necessário para que o canvas fique sobre a imagem */
-    display: inline-block;
-    max-width: 100%;  /* Garante que a imagem não ultrapasse o limite da área */
-    margin-top: 15px;
-}
-
+/* ================================
+   IMAGEM
+================================ */
 #preview {
     max-width: 100%;
-    display: block;  /* A imagem deve ser um bloco para garantir que o canvas não a cubra completamente */
+    margin-top: 15px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    z-index: 5;  /* Menor que o canvas */
 }
 
-#canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;  /* Coloca o canvas sobre a imagem */
-    pointer-events: none;  /* Permite interações com os elementos abaixo do canvas */
-    width: 100%;  /* Garante que o canvas tenha a largura da imagem */
-    height: 100%;  /* Garante que o canvas tenha a altura da imagem */
-}
-
-/* ===== BOTÕES ===== */
+/* ================================
+   BOTÕES
+================================ */
 .botoes {
-    margin-top: 15px;
     display: flex;
     gap: 10px;
+    margin-top: 15px;
 }
 
 button {
@@ -197,10 +160,8 @@ button {
     padding: 12px;
     border-radius: 8px;
     border: none;
-    cursor: pointer;
-    font-size: 14px;
     font-weight: bold;
-    transition: 0.3s;
+    cursor: pointer;
 }
 
 .primario {
@@ -208,66 +169,43 @@ button {
     color: white;
 }
 
-.primario:hover:enabled {
-    background: var(--verde-claro);
-}
-
-.primario:disabled {
-    background: #a5d6a7;
-    cursor: not-allowed;
-}
-
 .secundario {
     background: #ababab;
 }
 
-.secundario:hover {
-    background: #bdbdbd;
-}
-
-.secundario:disabled {
-    background: #dbdbdb;
-    cursor: not-allowed;
-}
-
-/* ===== RESULTADO ===== */
+/* ================================
+   RESULTADO
+================================ */
 .resultado {
     margin-top: 20px;
     border-top: 1px solid #ddd;
     padding-top: 15px;
 }
 
-/* ===== BARRA DE CONFIANÇA ===== */
-
+/* ================================
+   BARRA DE CONFIANÇA
+================================ */
 .barra-confianca {
     height: 20px;
-    background-color: #ff9800;
-    margin-top: 5px;
+    background: #ff9800;
     border-radius: 15px;
-    margin-bottom: 10px;
-    position: relative;
-    text-align: center;
-    color: white;
+    margin-top: 5px;
 }
 
-
-.barra-confianca > div {
+.barra-confianca div {
     height: 100%;
     width: 0;
     border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    color: black;
-    transition: width 0.5s, background 0.5s;
+    transition: width .5s;
 }
 
-/* ===== FEEDBACK VISUAL ===== */
+/* ================================
+   FEEDBACK
+================================ */
 .feedback {
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
+    flex-wrap: wrap;
     margin: 10px 0;
 }
 
@@ -278,53 +216,38 @@ button {
     border-radius: 8px;
     text-align: center;
     cursor: pointer;
-    user-select: none;
-    transition: all 0.3s;
-    background: white;
-    font-weight: bold;
 }
 
-.feedback input[type="radio"] {
-    display: none;
+/* ================================
+   LOADER
+================================ */
+.loader {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
 }
 
-.feedback label.checked {
-    border-color: var(--verde);
-    background: #e8f5e9;
-    box-shadow: 0 0 10px rgba(46,125,50,0.3);
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #eee;
+    border-top: 6px solid var(--verde);
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
 }
 
-/* ===== CATEGORIA CORRETA ESTILIZADA ===== */
-#correcao {
-    margin-top: 10px;
+@keyframes girar {
+    to { transform: rotate(360deg); }
 }
 
-#categoriaCorreta {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    background: #f9f9f9;
-    margin-bottom: 10px;
-}
-
-/* ===== DESTAQUE DE CATEGORIA ===== */
-.categoria-destacada {
-    font-weight: bold;
-    padding: 3px 10px;
-    border-radius: 5px;
-    color: rgb(3, 1, 124);
-}
-
-.categoria-Plástico { background: #4caf50; }
-.categoria-Papel { background: #1e88e5; }
-.categoria-Metal { background: #757575; }
-.categoria-Vidro { background: #00bcd4; }
-.categoria-Orgânico { background: #fbc02d; color: #333; }
-.categoria-Não\ é\ lixo { background: #9e9e9e; }
-
-/* ===== FOOTER ===== */
+/* ================================
+   FOOTER
+================================ */
 footer {
     background: #222;
     color: #ccc;
@@ -333,64 +256,16 @@ footer {
     font-size: 13px;
 }
 
-.objeto-item {
-    margin-bottom: 10px;
-    font-size: 14px;
-}
-
-/* ===== LOADER ===== */
-.loader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 15px;
-    z-index: 10;
-}
-
-.loader .spinner {
-    border: 6px solid #f3f3f3;
-    border-top: 6px solid var(--verde);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: girar 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes girar {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loader p {
-    font-size: 16px;
-    color: var(--cinza-escuro);
-    font-weight: bold;
-}
-
-/* ===== RESPONSIVO ===== */
+/* ================================
+   RESPONSIVO
+================================ */
 @media (max-width: 600px) {
-    .feedback label { flex: 1 1 100%; }
-    header { flex-direction: column; gap: 10px; }
-    .card {
-        padding: 20px;  /* Ajusta o padding para telas pequenas */
+    .feedback label {
+        flex: 1 1 100%;
     }
 
-    #preview-container {
-        max-width: 100%;
-        width: 100%;
-        height: auto;
-    }
-
-    #canvas {
-        width: 100%;
-        height: auto;
+    header {
+        flex-direction: column;
+        gap: 10px;
     }
 }
