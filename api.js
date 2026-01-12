@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000";  // Mudando para o endereço local
+const API_BASE_URL = "https://recyctech-back.onrender.com";
 
 export async function enviarImagemAPI(arquivo) {
     const formData = new FormData();
@@ -48,3 +48,4 @@ export async function enviarFeedbackAPI(categoria, feedbackSelecionado) {
 
     return await response.json();
 }
+
